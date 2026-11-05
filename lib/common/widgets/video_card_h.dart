@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
@@ -28,6 +30,7 @@ class VideoCardH extends StatelessWidget {
     this.showDanmaku = true,
     this.showPubdate = false,
     this.showCharge = false,
+    this.thumbnailWidth,
   });
   // ignore: prefer_typing_uninitialized_variables
   final videoItem;
@@ -39,6 +42,7 @@ class VideoCardH extends StatelessWidget {
   final bool showDanmaku;
   final bool showPubdate;
   final bool showCharge;
+  final double? thumbnailWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -84,67 +88,78 @@ class VideoCardH extends StatelessWidget {
         SmartDialog.dismiss,
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            StyleString.safeSpace, 5, StyleString.safeSpace, 5),
+        padding: EdgeInsets.symmetric(
+          horizontal: StyleString.safeSpace,
+          vertical: thumbnailWidth == null ? 5 : 8,
+        ),
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints boxConstraints) {
-            final double width = (boxConstraints.maxWidth -
-                    StyleString.cardSpace *
-                        6 /
-                        MediaQuery.textScalerOf(context).scale(1.0)) /
-                2;
+            final double width = thumbnailWidth
+                    ?.clamp(0.0, boxConstraints.maxWidth * 0.4)
+                    .toDouble() ??
+                (boxConstraints.maxWidth -
+                        StyleString.cardSpace *
+                            6 /
+                            MediaQuery.textScalerOf(context).scale(1.0)) /
+                    2;
             return Container(
               constraints: const BoxConstraints(minHeight: 88),
-              height: width / StyleString.aspectRatio,
+              height: thumbnailWidth == null
+                  ? width / StyleString.aspectRatio
+                  : math.max(width / StyleString.aspectRatio,
+                      MediaQuery.textScalerOf(context).scale(112)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  AspectRatio(
-                    aspectRatio: StyleString.aspectRatio,
-                    child: LayoutBuilder(
-                      builder: (BuildContext context,
-                          BoxConstraints boxConstraints) {
-                        final double maxWidth = boxConstraints.maxWidth;
-                        final double maxHeight = boxConstraints.maxHeight;
-                        return Stack(
-                          children: [
-                            Hero(
-                              tag: heroTag,
-                              child: NetworkImgLayer(
-                                src: videoItem.pic as String,
-                                width: maxWidth,
-                                height: maxHeight,
+                  SizedBox(
+                    width: thumbnailWidth == null ? null : width,
+                    child: AspectRatio(
+                      aspectRatio: StyleString.aspectRatio,
+                      child: LayoutBuilder(
+                        builder: (BuildContext context,
+                            BoxConstraints boxConstraints) {
+                          final double maxWidth = boxConstraints.maxWidth;
+                          final double maxHeight = boxConstraints.maxHeight;
+                          return Stack(
+                            children: [
+                              Hero(
+                                tag: heroTag,
+                                child: NetworkImgLayer(
+                                  src: videoItem.pic as String,
+                                  width: maxWidth,
+                                  height: maxHeight,
+                                ),
                               ),
-                            ),
-                            if (videoItem.duration != 0)
-                              PBadge(
-                                text: Utils.timeFormat(videoItem.duration!),
-                                right: 6.0,
-                                bottom: 6.0,
-                                type: 'gray',
-                              ),
-                            if (type != 'video')
-                              PBadge(
-                                text: type,
-                                left: 6.0,
-                                bottom: 6.0,
-                                type: 'primary',
-                              ),
-                            // if (videoItem.rcmdReason != null &&
-                            //     videoItem.rcmdReason.content != '')
-                            //   pBadge(videoItem.rcmdReason.content, context,
-                            //       6.0, 6.0, null, null),
-                            if (showCharge && videoItem?.isChargingSrc)
-                              const PBadge(
-                                text: '充电专属',
-                                right: 6.0,
-                                top: 6.0,
-                                type: 'primary',
-                              ),
-                          ],
-                        );
-                      },
+                              if (videoItem.duration != 0)
+                                PBadge(
+                                  text: Utils.timeFormat(videoItem.duration!),
+                                  right: 6.0,
+                                  bottom: 6.0,
+                                  type: 'gray',
+                                ),
+                              if (type != 'video')
+                                PBadge(
+                                  text: type,
+                                  left: 6.0,
+                                  bottom: 6.0,
+                                  type: 'primary',
+                                ),
+                              // if (videoItem.rcmdReason != null &&
+                              //     videoItem.rcmdReason.content != '')
+                              //   pBadge(videoItem.rcmdReason.content, context,
+                              //       6.0, 6.0, null, null),
+                              if (showCharge && videoItem?.isChargingSrc)
+                                const PBadge(
+                                  text: '充电专属',
+                                  right: 6.0,
+                                  top: 6.0,
+                                  type: 'primary',
+                                ),
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   ),
                   VideoContent(
@@ -155,6 +170,7 @@ class VideoCardH extends StatelessWidget {
                     showDanmaku: showDanmaku,
                     showPubdate: showPubdate,
                     onPressedFn: onPressedFn,
+                    compact: thumbnailWidth != null,
                   )
                 ],
               ),
@@ -175,6 +191,7 @@ class VideoContent extends StatelessWidget {
   final bool showDanmaku;
   final bool showPubdate;
   final Function()? onPressedFn;
+  final bool compact;
 
   const VideoContent({
     super.key,
@@ -185,6 +202,7 @@ class VideoContent extends StatelessWidget {
     this.showDanmaku = true,
     this.showPubdate = false,
     this.onPressedFn,
+    this.compact = false,
   });
 
   @override
@@ -199,8 +217,9 @@ class VideoContent extends StatelessWidget {
               Text(
                 videoItem.title as String,
                 textAlign: TextAlign.start,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w500,
+                  fontSize: compact ? 16 : null,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -253,14 +272,17 @@ class VideoContent extends StatelessWidget {
             if (showOwner)
               Row(
                 children: [
-                  Text(
+                  Expanded(
+                      child: Text(
                     videoItem.owner.name as String,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize:
                           Theme.of(context).textTheme.labelMedium!.fontSize,
                       color: Theme.of(context).colorScheme.outline,
                     ),
-                  ),
+                  )),
                 ],
               ),
             Row(

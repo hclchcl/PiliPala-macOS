@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -64,48 +66,57 @@ class _ZonePageState extends State<ZonePage>
       child: CustomScrollView(
         controller: _zoneController.scrollController,
         slivers: [
-          SliverPadding(
-            // 单列布局 EdgeInsets.zero
-            padding:
-                const EdgeInsets.fromLTRB(0, StyleString.safeSpace - 5, 0, 0),
-            sliver: FutureBuilder(
-              future: _futureBuilderFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  Map data = snapshot.data as Map;
-                  if (data['status']) {
-                    return Obx(
-                      () => SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return VideoCardH(
-                            videoItem: _zoneController.videoList[index],
-                            showPubdate: true,
-                          );
-                        }, childCount: _zoneController.videoList.length),
-                      ),
-                    );
+          SliverLayoutBuilder(builder: (context, constraints) {
+            final double horizontalPadding = Platform.isMacOS
+                ? math.max(0, (constraints.crossAxisExtent - 1120) / 2)
+                : 0;
+            return SliverPadding(
+              // 单列布局 EdgeInsets.zero
+              padding: EdgeInsets.fromLTRB(horizontalPadding,
+                  StyleString.safeSpace - 5, horizontalPadding, 0),
+              sliver: FutureBuilder(
+                future: _futureBuilderFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    Map data = snapshot.data as Map;
+                    if (data['status']) {
+                      return Obx(
+                        () => SliverList(
+                          delegate:
+                              SliverChildBuilderDelegate((context, index) {
+                            return VideoCardH(
+                              videoItem: _zoneController.videoList[index],
+                              showPubdate: true,
+                              thumbnailWidth: Platform.isMacOS ? 208 : null,
+                            );
+                          }, childCount: _zoneController.videoList.length),
+                        ),
+                      );
+                    } else {
+                      return HttpError(
+                        errMsg: data['msg'],
+                        fn: () {
+                          setState(() {
+                            _futureBuilderFuture = _zoneController
+                                .queryRankFeed('init', widget.rid);
+                          });
+                        },
+                      );
+                    }
                   } else {
-                    return HttpError(
-                      errMsg: data['msg'],
-                      fn: () {
-                        setState(() {
-                          _futureBuilderFuture =
-                              _zoneController.queryRankFeed('init', widget.rid);
-                        });
-                      },
+                    // 骨架屏
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return VideoCardHSkeleton(
+                          thumbnailWidth: Platform.isMacOS ? 208 : null,
+                        );
+                      }, childCount: 10),
                     );
                   }
-                } else {
-                  // 骨架屏
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return const VideoCardHSkeleton();
-                    }, childCount: 10),
-                  );
-                }
-              },
-            ),
-          ),
+                },
+              ),
+            );
+          }),
           SliverToBoxAdapter(
             child: SizedBox(
               height: MediaQuery.of(context).padding.bottom + 10,

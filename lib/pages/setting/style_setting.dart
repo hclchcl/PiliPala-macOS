@@ -114,7 +114,7 @@ class _StyleSettingState extends State<StyleSetting> {
                 context: context,
                 builder: (context) {
                   return SelectDialog<int>(
-                      title: '自定义列数',
+                      title: Platform.isMacOS ? '直播列表列数' : '自定义列数',
                       value: defaultCustomRows,
                       values: [1, 2, 3, 4, 5].map((e) {
                         return {'title': '$e 列', 'value': e};
@@ -128,9 +128,12 @@ class _StyleSettingState extends State<StyleSetting> {
               }
             },
             dense: false,
-            title: Text('自定义列数', style: titleStyle),
+            title:
+                Text(Platform.isMacOS ? '直播列表列数' : '自定义列数', style: titleStyle),
             subtitle: Text(
-              '当前列数 $defaultCustomRows 列',
+              Platform.isMacOS
+                  ? '直播 $defaultCustomRows 列，推荐固定 4 列'
+                  : '当前列数 $defaultCustomRows 列',
               style: subTitleStyle,
             ),
           ),

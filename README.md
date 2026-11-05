@@ -2,14 +2,14 @@
 
 基于 [guozhigq/pilipala](https://github.com/guozhigq/pilipala) 公开源码的 macOS 适配分支，保留原项目提交历史、作者信息和 GPL-3.0 许可。
 
-当前适配预览版：**1.0.25-macos.1**。构建基线为上游提交 [`06f23f6`](https://github.com/guozhigq/pilipala/commit/06f23f67ca61f22db42ebabd9b979b2c2f4fa808)，源码版本号为 `1.0.25+1025`。这不是原项目未公开对应源码的 1.0.27 发布版。
+当前适配预览版：**1.0.25-macos.2**。构建基线为上游提交 [`06f23f6`](https://github.com/guozhigq/pilipala/commit/06f23f67ca61f22db42ebabd9b979b2c2f4fa808)，上游源码版本号为 `1.0.25+1025`，当前 macOS 构建号为 `1026`。这不是原项目未公开对应源码的 1.0.27 发布版。
 
 ## 下载与安装
 
 从 [Releases](https://github.com/hclchcl/PiliPala-macOS/releases) 下载：
 
-- `PiliPala-1.0.25-macos.1-arm64.dmg`：打开后将 PiliPala 拖入 Applications。
-- `PiliPala-1.0.25-macos.1-arm64.zip`：解压后取得同一份 PiliPala.app。
+- `PiliPala-1.0.25-macos.2-arm64.dmg`：打开后将 PiliPala 拖入 Applications。
+- `PiliPala-1.0.25-macos.2-arm64.zip`：解压后取得同一份 PiliPala.app。
 - `SHA256SUMS.txt`：下载文件的 SHA-256 校验值。
 
 适用 **Apple Silicon（M 系列芯片）Mac、macOS 12 及以上**。Intel Mac 不适用此安装包。
@@ -17,6 +17,15 @@
 应用采用本地签名，未做 Apple Developer ID 签名或公证。下载后的首次启动可能需要在“系统设置 → 隐私与安全性”中允许打开。
 
 ## 适配内容
+
+### macos.2 桌面布局更新
+
+- macOS 首页推荐固定为 4 列，卡片按实际内容宽度计算尺寸，支持窗口缩放。
+- 排行榜保持单列顺序，封面限制为 208 逻辑像素宽，缩小行高并为文字缩放保留空间。
+- 排行榜内容在宽屏居中，最长标题保留两行，UP 主名称过长时省略；加载占位图沿用同样尺寸。
+- macOS 外观设置中的列数选项对应直播列表，推荐列表保持 4 列。
+
+### 基础 macOS 适配
 
 - 完成 Apple Silicon 正式构建，并统一 macOS 与插件的最低部署版本。
 - 在首帧前完成全局设置与播放器服务初始化，避免初始化顺序导致启动失败。

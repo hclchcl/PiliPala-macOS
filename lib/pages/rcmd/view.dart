@@ -117,41 +117,38 @@ class _RcmdPageState extends State<RcmdPage>
   }
 
   Widget contentGrid(ctr, videoList) {
-    // double maxWidth = Get.size.width;
-    // int baseWidth = 500;
-    // int step = 300;
-    // int crossAxisCount =
-    //     maxWidth > baseWidth ? 2 + ((maxWidth - baseWidth) / step).ceil() : 2;
-    // if (maxWidth < 300) {
-    //   crossAxisCount = 1;
-    // }
-    int crossAxisCount = ctr.crossAxisCount.value;
-    double mainAxisExtent = (Get.size.width /
-            crossAxisCount /
-            StyleString.aspectRatio) +
-        (crossAxisCount == 1 ? 68 : MediaQuery.textScalerOf(context).scale(86));
-    return SliverGrid(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        // 行间距
-        mainAxisSpacing: StyleString.safeSpace,
-        // 列间距
-        crossAxisSpacing: StyleString.safeSpace,
-        // 列数
-        crossAxisCount: crossAxisCount,
-        mainAxisExtent: mainAxisExtent,
-      ),
-      delegate: SliverChildBuilderDelegate(
-        (BuildContext context, int index) {
-          return videoList!.isNotEmpty
-              ? VideoCardV(
-                  videoItem: videoList[index],
-                  crossAxisCount: crossAxisCount,
-                  blockUserCb: (mid) => ctr.blockUserCb(mid),
-                )
-              : const VideoCardVSkeleton();
-        },
-        childCount: videoList!.isNotEmpty ? videoList!.length : 10,
-      ),
-    );
+    final int crossAxisCount = ctr.crossAxisCount.value;
+    return SliverLayoutBuilder(builder: (context, constraints) {
+      final double cardWidth = (constraints.crossAxisExtent -
+              StyleString.safeSpace * (crossAxisCount - 1)) /
+          crossAxisCount;
+      final double mainAxisExtent = cardWidth / StyleString.aspectRatio +
+          (crossAxisCount == 1
+              ? 68
+              : MediaQuery.textScalerOf(context).scale(86));
+      return SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          // 行间距
+          mainAxisSpacing: StyleString.safeSpace,
+          // 列间距
+          crossAxisSpacing: StyleString.safeSpace,
+          // 列数
+          crossAxisCount: crossAxisCount,
+          mainAxisExtent: mainAxisExtent,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (BuildContext context, int index) {
+            return videoList!.isNotEmpty
+                ? VideoCardV(
+                    videoItem: videoList[index],
+                    crossAxisCount: crossAxisCount,
+                    blockUserCb: (mid) => ctr.blockUserCb(mid),
+                  )
+                : const VideoCardVSkeleton();
+          },
+          childCount: videoList!.isNotEmpty ? videoList!.length : 10,
+        ),
+      );
+    });
   }
 }

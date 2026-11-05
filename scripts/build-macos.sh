@@ -3,7 +3,7 @@ set -euo pipefail
 
 project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 dist_dir="${1:-$project_root/dist}"
-release_name="PiliPala-1.0.25-macos.1-arm64"
+release_name="PiliPala-1.0.25-macos.2-arm64"
 temporary_dir=""
 trap 'if [[ -n "$temporary_dir" ]]; then rm -rf -- "$temporary_dir"; fi' EXIT
 

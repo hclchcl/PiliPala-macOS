@@ -1,39 +1,54 @@
+import 'dart:math' as math;
+
 import 'package:pilipala/common/constants.dart';
 import 'package:flutter/material.dart';
 import 'skeleton.dart';
 
 class VideoCardHSkeleton extends StatelessWidget {
-  const VideoCardHSkeleton({super.key});
+  const VideoCardHSkeleton({super.key, this.thumbnailWidth});
+
+  final double? thumbnailWidth;
 
   @override
   Widget build(BuildContext context) {
     return Skeleton(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            StyleString.safeSpace, 7, StyleString.safeSpace, 7),
+        padding: EdgeInsets.symmetric(
+          horizontal: StyleString.safeSpace,
+          vertical: thumbnailWidth == null ? 7 : 8,
+        ),
         child: LayoutBuilder(
           builder: (context, boxConstraints) {
-            double width =
+            final double width = thumbnailWidth
+                    ?.clamp(0.0, boxConstraints.maxWidth * 0.4)
+                    .toDouble() ??
                 (boxConstraints.maxWidth - StyleString.cardSpace * 6) / 2;
             return SizedBox(
-              height: width / StyleString.aspectRatio,
+              height: thumbnailWidth == null
+                  ? width / StyleString.aspectRatio
+                  : math.max(width / StyleString.aspectRatio,
+                      MediaQuery.textScalerOf(context).scale(112)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AspectRatio(
-                    aspectRatio: StyleString.aspectRatio,
-                    child: LayoutBuilder(
-                      builder: (context, boxConstraints) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color:
-                                Theme.of(context).colorScheme.onInverseSurface,
-                            borderRadius:
-                                BorderRadius.circular(StyleString.imgRadius.x),
-                          ),
-                        );
-                      },
+                  SizedBox(
+                    width: thumbnailWidth == null ? null : width,
+                    child: AspectRatio(
+                      aspectRatio: StyleString.aspectRatio,
+                      child: LayoutBuilder(
+                        builder: (context, boxConstraints) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onInverseSurface,
+                              borderRadius: BorderRadius.circular(
+                                  StyleString.imgRadius.x),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   // VideoContent(videoItem: videoItem)
