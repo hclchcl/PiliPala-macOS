@@ -26,16 +26,20 @@ import 'package:media_kit/media_kit.dart';
 import 'package:pilipala/utils/recommend_filter.dart';
 import 'package:catcher_2/catcher_2.dart';
 import './services/loggeer.dart';
+import 'package:pilipala/utils/macos_integration.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
+  MacOSIntegration.initializeWebView();
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   await GStrorage.init();
+  await GlobalDataCache().initialize();
   clearLogs();
   Request();
   await Request.setCookie();
+  await setupServiceLocator();
 
   // 异常捕获 logo记录
   final Catcher2Options releaseConfig = Catcher2Options(
@@ -64,7 +68,6 @@ void main() async {
   }
 
   PiliSchame.init();
-  await GlobalDataCache().initialize();
 }
 
 class MyApp extends StatelessWidget {
@@ -269,7 +272,6 @@ class BuildMainApp extends StatelessWidget {
       onReady: () async {
         RecommendFilter();
         Data.init();
-        setupServiceLocator();
       },
     );
   }

@@ -124,9 +124,9 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
   void dispose() {
     _pageController!.dispose();
     _animationController.dispose();
-    try {
+    if (Platform.isIOS || Platform.isAndroid) {
       StatusBarControl.setHidden(false, animation: StatusBarAnimation.FADE);
-    } catch (_) {}
+    }
     super.dispose();
   }
 

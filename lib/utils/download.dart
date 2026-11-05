@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:saver_gallery/saver_gallery.dart';
+import 'package:pilipala/utils/macos_integration.dart';
 
 class DownloadUtils {
   // 获取存储权限
@@ -57,6 +58,13 @@ class DownloadUtils {
       final String imgSuffix = imgUrl.split('.').last;
       String picName =
           "plpl_${imgType}_${DateTime.now().toString().replaceAll(RegExp(r'[- :]'), '').split('.').first}";
+      if (Platform.isMacOS) {
+        SmartDialog.dismiss();
+        final savedPath = await MacOSIntegration.saveImage(
+            Uint8List.fromList(response.data), '$picName.$imgSuffix');
+        if (savedPath != null) SmartDialog.showToast('图片已保存');
+        return savedPath != null;
+      }
       final SaveResult result = await SaverGallery.saveImage(
         Uint8List.fromList(response.data),
         name: '$picName.$imgSuffix',

@@ -935,6 +935,16 @@ class PlPlayerController {
 
   // 全屏
   Future<void> triggerFullScreen({bool status = true}) async {
+    if (Platform.isMacOS || Platform.isWindows || Platform.isLinux) {
+      if (!isFullScreen.value && status) {
+        toggleFullScreen(true);
+        await landScape();
+      } else if (isFullScreen.value && !status) {
+        await exitFullScreen();
+        toggleFullScreen(false);
+      }
+      return;
+    }
     FullScreenMode mode = FullScreenModeCode.fromCode(
         setting.get(SettingBoxKey.fullScreenMode, defaultValue: 0))!;
     await StatusBarControl.setHidden(true, animation: StatusBarAnimation.FADE);

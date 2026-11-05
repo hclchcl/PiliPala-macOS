@@ -67,7 +67,7 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   RxBool isShowing = true.obs;
   // 生命周期监听
   late final AppLifecycleListener _lifecycleListener;
-  late double statusHeight;
+  double statusHeight = 0;
 
   @override
   void initState() {
@@ -219,7 +219,9 @@ class _VideoDetailPageState extends State<VideoDetailPage>
   }
 
   getStatusHeight() async {
-    statusHeight = await StatusBarControl.getHeight;
+    if (Platform.isAndroid || Platform.isIOS) {
+      statusHeight = await StatusBarControl.getHeight;
+    }
   }
 
   @override

@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                   });
                 },
               ).then((value) {
-                _loginPageCtr.validTimer!.cancel();
+                _loginPageCtr.validTimer?.cancel();
               });
             },
             icon: const Icon(Icons.qr_code, size: 20),

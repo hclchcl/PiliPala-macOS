@@ -27,7 +27,7 @@ class LoginPageController extends GetxController {
 
   RxInt currentIndex = 0.obs;
 
-  final Gt3FlutterPlugin captcha = Gt3FlutterPlugin();
+  late final Gt3FlutterPlugin captcha = Gt3FlutterPlugin();
 
   // 倒计时60s
   RxInt seconds = 60.obs;
@@ -181,6 +181,10 @@ class LoginPageController extends GetxController {
 
   // 申请极验验证码
   Future getCaptcha(oncall) async {
+    if (Platform.isMacOS) {
+      SmartDialog.showToast('请使用右上角的二维码或网页登录');
+      return;
+    }
     SmartDialog.showLoading(msg: '请求中...');
     var result = await LoginHttp.queryCaptcha();
     if (result['status']) {
@@ -313,6 +317,7 @@ class LoginPageController extends GetxController {
 
   // 获取登录二维码
   Future getWebQrcode() async {
+    validTimer?.cancel();
     var res = await LoginHttp.getWebQrcode();
     validSeconds.value = 180;
     if (res['status']) {

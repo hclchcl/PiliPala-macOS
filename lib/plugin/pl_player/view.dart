@@ -330,20 +330,23 @@ class _PLVideoPlayerState extends State<PLVideoPlayer>
 
       /// 字幕
       /// 全屏
-      BottomControlType.fullscreen: ComBtn(
-        icon: Obx(
-          () => Icon(
-            _.isFullScreen.value
-                ? FontAwesomeIcons.compress
-                : FontAwesomeIcons.expand,
-            size: 15,
-            color: Colors.white,
+      BottomControlType.fullscreen: Tooltip(
+        message: '全屏/退出全屏',
+        child: ComBtn(
+          icon: Obx(
+            () => Icon(
+              _.isFullScreen.value
+                  ? FontAwesomeIcons.compress
+                  : FontAwesomeIcons.expand,
+              size: 15,
+              color: Colors.white,
+            ),
           ),
+          fuc: () {
+            _.triggerFullScreen(status: !_.isFullScreen.value);
+            widget.fullScreenCb?.call(!_.isFullScreen.value);
+          },
         ),
-        fuc: () {
-          _.triggerFullScreen(status: !_.isFullScreen.value);
-          widget.fullScreenCb?.call(!_.isFullScreen.value);
-        },
       ),
     };
     final List<Widget> list = [];

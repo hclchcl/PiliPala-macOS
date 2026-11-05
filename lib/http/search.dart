@@ -87,8 +87,20 @@ class SearchHttp {
       if (duration != null) 'duration': duration,
       if (tids != null && tids != -1) 'tids': tids,
     };
-    var res = await Request().get(Api.searchByType, data: reqData);
+    final params = await WbiSign().makSign(reqData);
+    var res = await Request().get(Api.searchByType, data: params);
     if (res.data['code'] == 0) {
+      final responseData = res.data['data'];
+      if (responseData is Map && responseData.containsKey('v_voucher')) {
+        return {
+          'status': false,
+          'data': [],
+          'msg': '哔哩哔哩要求验证，请先登录或稍后重试',
+        };
+      }
+      if (responseData is! Map) {
+        return {'status': false, 'data': [], 'msg': '搜索暂时不可用，请稍后重试'};
+      }
       if (res.data['data']['numPages'] == 0) {
         // 我想返回数据，使得可以通过data.list 取值，结果为[]
         return {'status': true, 'data': Data()};
@@ -124,6 +136,7 @@ class SearchHttp {
         };
       } catch (err) {
         print(err);
+        return {'status': false, 'data': [], 'msg': '搜索暂时不可用，请稍后重试'};
       }
     } else {
       return {

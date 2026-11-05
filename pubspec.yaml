@@ -19,7 +19,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.25+1025
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ">=3.5.0 <4.0.0"
+  flutter: ">=3.24.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -66,6 +67,8 @@ dependencies:
   webview_cookie_manager: ^2.0.6
   # 浏览器
   webview_flutter: ^4.8.0
+  # Explicitly register the WKWebView implementation on macOS.
+  webview_flutter_wkwebview: 3.16.3
   # 解决sliver滑动不同步
   extended_nested_scroll_view: ^6.2.1
   # 上拉加载
@@ -116,7 +119,7 @@ dependencies:
   ns_danmaku:
     git:
       url: https://github.com/guozhigq/flutter_ns_danmaku.git
-      ref: master
+      ref: d1cb3f0190ca67ec4d7fd372dac96f4f17a81a1a
   # 状态栏图标控制
   status_bar_control: ^3.2.1
   # 代理
@@ -125,7 +128,7 @@ dependencies:
   floating:
     git:
       url: https://github.com/guozhigq/floating.git
-      ref: main
+      ref: 8e89669eb9341f9980265306e24ef96fdbd3fd08
   # html解析
   html: ^0.15.4
   # html渲染
@@ -175,14 +178,17 @@ dependency_overrides:
     git:
       url: https://github.com/media-kit/media-kit
       path: media_kit
+      ref: 285f7919bbf4a7d89a62615b14a3766a171ad575
   media_kit_video:
     git:
       url: https://github.com/media-kit/media-kit
       path: media_kit_video
+      ref: 285f7919bbf4a7d89a62615b14a3766a171ad575
   media_kit_libs_video:
     git:
       url: https://github.com/media-kit/media-kit
       path: libs/universal/media_kit_libs_video
+      ref: 285f7919bbf4a7d89a62615b14a3766a171ad575
 
 flutter_launcher_icons:
   android: true

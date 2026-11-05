@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:pilipala/models/video/reply/item.dart';
 import 'package:pilipala/pages/video/detail/reply/widgets/reply_item.dart';
 import 'package:saver_gallery/saver_gallery.dart';
+import 'package:pilipala/utils/macos_integration.dart';
 
 class ReplySave extends StatefulWidget {
   final ReplyItemModel? replyItem;
@@ -30,6 +32,13 @@ class _ReplySaveState extends State<ReplySave> {
       Uint8List pngBytes = byteData!.buffer.asUint8List();
       String picName =
           "plpl_reply_${DateTime.now().toString().replaceAll(RegExp(r'[- :]'), '').split('.').first}";
+      if (Platform.isMacOS) {
+        SmartDialog.dismiss();
+        final savedPath =
+            await MacOSIntegration.saveImage(pngBytes, '$picName.png');
+        if (savedPath != null) SmartDialog.showToast('保存成功');
+        return;
+      }
       final result = await SaverGallery.saveImage(
         Uint8List.fromList(pngBytes),
         name: '$picName.png',

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:appscheme/appscheme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,8 @@ import 'utils.dart';
 class PiliSchame {
   static AppScheme appScheme = AppSchemeImpl.getInstance()!;
   static Future<void> init() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+
     ///
     final SchemeEntity? value = await appScheme.getInitScheme();
     if (value != null) {

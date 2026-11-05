@@ -22,9 +22,14 @@ class SearchResultController extends GetxController {
   Future querySearchCount() async {
     var result = await SearchHttp.searchCount(keyword: keyword!);
     if (result['status']) {
+      final Map? counts = result['data'].topTList;
+      // The service can omit category counts while still returning results.
+      if (counts == null) return result;
       for (var i in searchTabs) {
-        final count = result['data'].topTList[i['id']];
-        i['count'] = count > 99 ? '99+' : count.toString();
+        final count = counts[i['id']];
+        if (count is num) {
+          i['count'] = count > 99 ? '99+' : count.toString();
+        }
       }
       searchTabs.refresh();
     }

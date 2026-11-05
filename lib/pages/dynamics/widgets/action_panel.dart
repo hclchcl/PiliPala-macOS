@@ -1,4 +1,5 @@
 // 操作栏
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -31,7 +32,7 @@ class _ActionPanelState extends State<ActionPanel>
   double defaultHeight = 260;
   RxDouble height = 0.0.obs;
   RxBool isExpand = false.obs;
-  late double statusHeight;
+  double statusHeight = 0;
   TextEditingController _inputController = TextEditingController();
   FocusNode myFocusNode = FocusNode();
   String _inputText = '';
@@ -54,7 +55,9 @@ class _ActionPanelState extends State<ActionPanel>
   }
 
   onInit() async {
-    statusHeight = await StatusBarControl.getHeight;
+    if (Platform.isAndroid || Platform.isIOS) {
+      statusHeight = await StatusBarControl.getHeight;
+    }
   }
 
   // 动态点赞
